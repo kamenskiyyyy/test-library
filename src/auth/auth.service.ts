@@ -1,9 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
-import { User, UserDocument } from './user.model';
+import { UsersDto } from '../users/dto/users.dto';
+import { User, UserDocument } from '../users/user.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare, genSalt, hash } from 'bcryptjs';
-import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';
+import {
+  USER_NOT_FOUND_ERROR,
+  WRONG_PASSWORD_ERROR,
+} from '../constants/auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 
@@ -13,15 +16,6 @@ export class AuthService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
   ) {}
-
-  async createUser(dto: AuthDto) {
-    const salt = await genSalt(10);
-    const newUser = new this.userModel({
-      email: dto.login,
-      passwordHash: await hash(dto.password, salt),
-    });
-    return newUser.save();
-  }
 
   async findUser(email: string) {
     return this.userModel.findOne({ email }).exec();

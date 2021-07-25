@@ -1,27 +1,27 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from '../users/users.controller';
-import { User, UserSchema } from '../users/user.model';
-import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
+import { User, UserSchema } from './user.model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { getJWTConfig } from '../configs/jwt.config';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserService } from '../users/users.service';
+import { UserService } from './users.service';
+import { UsersController } from './users.controller';
+import { AuthService } from '../auth/auth.service';
+import { JwtStrategy } from '../auth/strategies/jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { getJWTConfig } from '../configs/jwt.config';
 
 @Module({
   controllers: [UsersController],
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ConfigModule,
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: getJWTConfig,
     }),
-    PassportModule,
   ],
-  providers: [UserService, AuthService, JwtStrategy],
+  providers: [AuthService, UserService, JwtStrategy],
 })
-export class AuthModule {}
+export class UsersModule {}
