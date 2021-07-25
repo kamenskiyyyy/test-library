@@ -2,8 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
-  HttpCode,
+  Delete,
+  Get,
+  Param,
   Post,
+  Put,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -12,7 +15,7 @@ import { AuthService } from '../auth/auth.service';
 import { ALREADY_REGISTERED_ERROR } from '../constants/auth.constants';
 import { UserService } from './users.service';
 
-@Controller('/')
+@Controller('/users')
 export class UsersController {
   constructor(
     private readonly authService: AuthService,
@@ -30,10 +33,44 @@ export class UsersController {
   }
 
   @UsePipes(new ValidationPipe())
-  @HttpCode(200)
   @Post('signin')
   async login(@Body() { login, password }: UsersDto) {
     const { email } = await this.authService.validateUser(login, password);
     return this.authService.login(email);
+  }
+
+  @Get()
+  getAllUsers() {
+    return this.usersService.getAllUsers();
+  }
+
+  @Get(':id')
+  getUserById(@Param('id') id: string) {
+    return this.usersService.getUserById(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: UsersDto) {
+    return this.usersService.updateUser(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.removeUser(id);
+  }
+
+  @Put(':id/buycard')
+  buyLibraryCard(@Param('id') id: string) {
+    return this.usersService.buyLibraryCard(id);
+  }
+
+  @Put(':idUser/getBook/:idBook')
+  purchaseBook(@Param('idUser') id: string, @Param('idBook') book: string) {
+    return this.usersService.purchaseBook(id, book);
+  }
+
+  @Put(':idUser/passBook/:idBook')
+  passBook(@Param('idUser') id: string, @Param('idBook') book: string) {
+    return this.usersService.passBook(id, book);
   }
 }

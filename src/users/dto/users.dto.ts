@@ -1,4 +1,6 @@
 import { IsString } from 'class-validator';
+import { Types } from 'mongoose';
+import { Book } from '../../books/schemas/book.schema';
 
 export class UsersDto {
   @IsString()
@@ -6,4 +8,8 @@ export class UsersDto {
 
   @IsString()
   password: string;
+
+  libraryCard: boolean;
+
+  purchasedBooks: Types.Array<Book>;
 }
