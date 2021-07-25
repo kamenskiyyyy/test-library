@@ -37,6 +37,10 @@ export class UserService {
   }
 
   async buyLibraryCard(id) {
+    const user: UsersDto | any = await this.userModel.findById(id).exec();
+    if (user.libraryCard) {
+      throw new BadRequestException('Вы уже купили читательский билет!');
+    }
     return this.userModel.findByIdAndUpdate(id, { libraryCard: true });
   }
 

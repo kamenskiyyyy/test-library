@@ -6,7 +6,7 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  Put, UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +14,7 @@ import { UsersDto } from './dto/users.dto';
 import { AuthService } from '../auth/auth.service';
 import { ALREADY_REGISTERED_ERROR } from '../constants/auth.constants';
 import { UserService } from './users.service';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('/users')
 export class UsersController {
@@ -49,26 +50,31 @@ export class UsersController {
     return this.usersService.getUserById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UsersDto) {
     return this.usersService.updateUser(id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.removeUser(id);
   }
 
-  @Put(':id/buycard')
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/buycard')
   buyLibraryCard(@Param('id') id: string) {
     return this.usersService.buyLibraryCard(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':idUser/getBook/:idBook')
   purchaseBook(@Param('idUser') id: string, @Param('idBook') book: string) {
     return this.usersService.purchaseBook(id, book);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':idUser/passBook/:idBook')
   passBook(@Param('idUser') id: string, @Param('idBook') book: string) {
     return this.usersService.passBook(id, book);

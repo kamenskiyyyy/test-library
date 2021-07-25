@@ -1,73 +1,123 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Тестовое задание: "Сделать Backend для библиотеки на Node.JS"
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Основной функционал:
+- Пользователь может купить абонемент и получить доступ к книгам.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Ограничения:
+- Одновременно пользователь не может взять более 5 книг
+- Если у пользователя нет купленного абонемента то ему нельзя взять книгу
+- Пользователь может иметь одновременно только 1 активный абонемент
+- Каждая книга может быть выдана только 1 человеку в 1 момент времени (будем предполагать что существует только 1 экземпляр книги и пока один пользователь не вернул книгу другой не может ее взять)
 
-## Description
+## Роуты
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Для пользователей:
+<table>
+<tr>
+<td align="center"><strong>Запрос</strong></th>
+<td align="center"><strong>Роут</strong></th>
+<td align="center"> <strong>Описание</strong></th>
+</tr>
 
-## Installation
+<tr>
+<td align="center">GET</td>
+<td align="center">/users</td>
+<td>(Публичный) Показывает список всех пользователей</td>
+</tr>
 
-```bash
-$ npm install
-```
+<tr>
+<td align="center">POST</td>
+<td align="center">/users/signup</td>
+<td>Создание нового пользователя</td>
+</tr>
 
-## Running the app
+<tr>
+<td align="center">POST</td>
+<td align="center">/users/signin</td>
+<td>Авторизация зарегистрированного пользователя</td>
+</tr>
 
-```bash
-# development
-$ npm run start
+<tr>
+<td align="center">POST</td>
+<td align="center">/signout</td>
+<td>Удаляет JWT из куков пользователя</td>
+</tr>
 
-# watch mode
-$ npm run start:dev
+<tr>
+<td align="center">GET</td>
+<td align="center">/users/:id</td>
+<td>(Публичный) Возвращает информацию о конкретном пользователе + список взятых книг</td>
+</tr>
 
-# production mode
-$ npm run start:prod
-```
+<tr>
+<td align="center">PUT</td>
+<td align="center">/users/:id</td>
+<td>Обновляет информацию о пользователе</td>
+</tr>
 
-## Test
+<tr>
+<td align="center">DELETE</td>
+<td align="center">/users/:id</td>
+<td>Удаляет текущего пользователя</td>
+</tr>
 
-```bash
-# unit tests
-$ npm run test
+<tr>
+<td align="center">GET</td>
+<td align="center">/users/:id/buycard</td>
+<td>Метод позволяет пользователю купить читательский билет. Если билет уже есть, то вылетит ошибка.</td>
+</tr>
 
-# e2e tests
-$ npm run test:e2e
+<tr>
+<td align="center">PUT</td>
+<td align="center">/users/:id/getBook/:idBook</td>
+<td>Метод позволяет пользователю взять себе книгу по ее id. Нельзя брать больше пяти книг. Если пользователь уже взял эту книгу, то вылетит ошибка.</td>
+</tr>
 
-# test coverage
-$ npm run test:cov
-```
+<tr>
+<td align="center">PUT</td>
+<td align="center">/users/:id/passBook/:idBook</td>
+<td>Метод позволяет пользователю сдать книгу.</td>
+</tr>
 
-## Support
+</table>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Для книг:
 
-## Stay in touch
+<table>
+<tr>
+<td align="center"><strong>Запрос</strong></th>
+<td align="center"><strong>Роут</strong></th>
+<td align="center"> <strong>Описание</strong></th>
+</tr>
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<tr>
+<td align="center">GET</td>
+<td align="center">/books</td>
+<td>(Публичный) Возвращает список всех книг</td>
+</tr>
 
-## License
+<tr>
+<td align="center">GET</td>
+<td align="center">/books/:id</td>
+<td>(Публичный) Возвращает информацию о конкретной книге</td>
+</tr>
 
-Nest is [MIT licensed](LICENSE).
+<tr>
+<td align="center">POST</td>
+<td align="center">/books</td>
+<td>Создание новой книги</td>
+</tr>
+
+<tr>
+<td align="center">PUT</td>
+<td align="center">/books/:id</td>
+<td>Обновляет информацию о книге</td>
+</tr>
+
+<tr>
+<td align="center">DELETE</td>
+<td align="center">/books/:id</td>
+<td>Метод удаляет книгу</td>
+</tr>
+
+</table>
