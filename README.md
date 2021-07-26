@@ -38,12 +38,6 @@
 </tr>
 
 <tr>
-<td align="center">POST</td>
-<td align="center">/signout</td>
-<td>Удаляет JWT из куков пользователя</td>
-</tr>
-
-<tr>
 <td align="center">GET</td>
 <td align="center">/users/:id</td>
 <td>(Публичный) Возвращает информацию о конкретном пользователе + список взятых книг</td>

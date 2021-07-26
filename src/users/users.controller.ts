@@ -6,27 +6,24 @@ import {
   Get,
   Param,
   Post,
-  Put, UseGuards,
+  Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersDto } from './dto/users.dto';
-import { AuthService } from '../auth/auth.service';
 import { ALREADY_REGISTERED_ERROR } from '../constants/auth.constants';
 import { UserService } from './users.service';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('/users')
 export class UsersController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UserService,
-  ) {}
+  constructor(private readonly usersService: UserService) {}
 
   @UsePipes(new ValidationPipe())
   @Post('signup')
   async register(@Body() dto: UsersDto) {
-    const oldUser = await this.authService.findUser(dto.login);
+    const oldUser = await this.usersService.findUser(dto.login);
     if (oldUser) {
       throw new BadRequestException(ALREADY_REGISTERED_ERROR);
     }
@@ -36,8 +33,8 @@ export class UsersController {
   @UsePipes(new ValidationPipe())
   @Post('signin')
   async login(@Body() { login, password }: UsersDto) {
-    const { email } = await this.authService.validateUser(login, password);
-    return this.authService.login(email);
+    const { email } = await this.usersService.validateUser(login, password);
+    return this.usersService.login(email);
   }
 
   @Get()

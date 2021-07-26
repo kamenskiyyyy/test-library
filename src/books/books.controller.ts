@@ -10,7 +10,7 @@ import {
 import { BookDto } from './dto/book.dto';
 import { BooksService } from './books.service';
 import { Book } from './schemas/book.schema';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../users/guards/jwt.guard';
 
 @Controller('books')
 export class BooksController {

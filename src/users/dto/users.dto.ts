@@ -1,15 +1,27 @@
-import { IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { Types } from 'mongoose';
 import { Book } from '../../books/schemas/book.schema';
 
 export class UsersDto {
-  @IsString()
+  @IsEmail()
   login: string;
 
   @IsString()
+  @MinLength(6, { message: 'Минимальная длинна пароля 6 символов' })
   password: string;
 
-  libraryCard: boolean;
+  @IsOptional()
+  @IsBoolean()
+  libraryCard?: boolean;
 
-  purchasedBooks: Types.Array<Book>;
+  @IsOptional()
+  @IsArray()
+  purchasedBooks?: Types.Array<Book>;
 }
