@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,10 +11,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersDto } from './dto/users.dto';
-import { ALREADY_REGISTERED_ERROR } from '../constants/auth.constants';
 import { UserService } from './users.service';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { User } from './user.model';
+import { UserEntity } from './user.entity';
+import { DeleteResult } from 'typeorm';
 
 @Controller('/users')
 export class UsersController {
@@ -23,58 +22,38 @@ export class UsersController {
 
   @UsePipes(new ValidationPipe())
   @Post('signup')
-  async register(@Body() dto: UsersDto): Promise<User> {
-    const oldUser = await this.usersService.findUser(dto.login);
-    if (oldUser) {
-      throw new BadRequestException(ALREADY_REGISTERED_ERROR);
-    }
-    return this.usersService.createUser(dto);
+  async register(@Body() createUserDto: UsersDto): Promise<UserEntity> {
+    return await this.usersService.createUser(createUserDto);
   }
 
   @UsePipes(new ValidationPipe())
   @Post('signin')
-  async login(@Body() { login, password }: UsersDto) {
-    const { email } = await this.usersService.validateUser(login, password);
-    return this.usersService.login(email);
+  async login(@Body() loginDto: UsersDto) {
+    return await this.usersService.login(loginDto);
   }
 
   @Get()
-  getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<UserEntity[]> {
     return this.usersService.getAllUsers();
   }
 
   @Get(':id')
-  getUserById(@Param('id') id: string): Promise<User> {
+  async getUserById(@Param('id') id: string): Promise<UserEntity> {
     return this.usersService.getUserById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UsersDto): Promise<User> {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UsersDto,
+  ): Promise<UserEntity> {
     return this.usersService.updateUser(id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<User> {
+  async remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.usersService.removeUser(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id/buycard')
-  buyLibraryCard(@Param('id') id: string): Promise<User> {
-    return this.usersService.buyLibraryCard(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put(':idUser/getBook/:idBook')
-  purchaseBook(@Param('idUser') id: string, @Param('idBook') book: string): Promise<User> {
-    return this.usersService.purchaseBook(id, book);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put(':idUser/passBook/:idBook')
-  passBook(@Param('idUser') id: string, @Param('idBook') book: string): Promise<User> {
-    return this.usersService.passBook(id, book);
   }
 }
