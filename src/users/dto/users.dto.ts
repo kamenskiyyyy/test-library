@@ -21,5 +21,5 @@ export class UsersDto {
 
   @IsOptional()
   @IsArray()
-  purchasedBooks?: string[];
+  purchasedBooks?: number[];
 }

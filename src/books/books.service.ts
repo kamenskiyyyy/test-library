@@ -23,7 +23,7 @@ export class BooksService {
     return this.bookRepository.find();
   }
 
-  async getById(id: string): Promise<BookEntity> {
+  async getById(id: number): Promise<BookEntity> {
     return this.bookRepository.findOne(id);
   }
 
@@ -33,7 +33,7 @@ export class BooksService {
     return await this.bookRepository.save(book);
   }
 
-  async update(id: string, bookDto: BookDto): Promise<BookEntity> {
+  async update(id: number, bookDto: BookDto): Promise<BookEntity> {
     const book = await this.bookRepository.findOne(id);
     if (!book) {
       throw new HttpException('Книга не найдена', HttpStatus.NOT_FOUND);
@@ -42,11 +42,11 @@ export class BooksService {
     return await this.bookRepository.save(book);
   }
 
-  async remove(id: string): Promise<DeleteResult> {
+  async remove(id: number): Promise<DeleteResult> {
     return this.bookRepository.delete(id);
   }
 
-  async buyLibraryCard(id): Promise<UserEntity> {
+  async buyLibraryCard(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne(id);
     if (user.libraryCard) {
       throw new BadRequestException('Вы уже купили читательский билет!');
@@ -55,38 +55,54 @@ export class BooksService {
     return await this.userRepository.save(user);
   }
 
-  async purchaseBook(idUser, idBook) {
-    debugger;
+  async purchaseBook(idUser: number, idBook: number) {
     const user = await this.userRepository.findOne(idUser);
     const book = await this.bookRepository.findOne(idBook);
+    if (!!!book) throw new BadRequestException('Книга не найдена');
     if (!user.libraryCard) {
       throw new BadRequestException('Необходимо купить читательский билет!');
+    }
+    if (user.purchasedBooks.includes(+idBook)) {
+      throw new BadRequestException('Вы уже взяли эту книгу!');
     }
     if (user.purchasedBooks.length === 5) {
       throw new BadRequestException(
         'Вы не можете взять больше пяти книг одновременно!',
       );
     }
-    // Метод не работает из-за получения массива в виде строки
-    // if (user.purchasedBooks.find((book) => book.id === idBook)) {
-    //   throw new BadRequestException('Вы уже взяли эту книгу!');
-    // }
     if (book.isReader) {
       throw new BadRequestException('Эту книгу кто-то уже взял!');
     }
 
-    user.purchasedBooks.push(book);
+    user.purchasedBooks.push(book.id);
     Object.assign(book, (book.isReader = true));
     await this.bookRepository.save(book);
     return this.userRepository.save(user);
   }
 
-  async passBook(idUser, idBook): Promise<UserEntity> {
+  async passBook(idUser: number, idBook: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne(idUser);
-    const purchasedBooks: BookEntity[] = user.purchasedBooks.filter(
-      (book) => book.id !== idBook,
-    );
-    Object.assign(user, (user.purchasedBooks = purchasedBooks));
+    const book = await this.bookRepository.findOne(idBook);
+    if (!!!user) throw new BadRequestException('Пользователь не найден');
+    if (!!!book) throw new BadRequestException('Книга не найдена');
+
+    const purchasedBooks = user.purchasedBooks;
+    if (purchasedBooks.length === 0) {
+      throw new BadRequestException(
+        'Вы не брали книги для чтения или вы сдали все книги в библиотеку.',
+      );
+    }
+    const idx = purchasedBooks.indexOf(+idBook);
+    if (idx >= 0) {
+      purchasedBooks.splice(idx, 1);
+    } else {
+      throw new BadRequestException(
+        'Вы не можете вернуть книгу, которую не брали.',
+      );
+    }
+
+    Object.assign(book, (book.isReader = false));
+    await this.bookRepository.save(book);
     return this.userRepository.save(user);
   }
 }

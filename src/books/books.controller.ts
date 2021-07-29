@@ -25,7 +25,7 @@ export class BooksController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<BookEntity> {
+  async getById(@Param('id') id: number): Promise<BookEntity> {
     return this.bookService.getById(id);
   }
 
@@ -39,28 +39,28 @@ export class BooksController {
   @Put(':id')
   async update(
     @Body() updateBookDto: BookDto,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ): Promise<BookEntity> {
     return this.bookService.update(id, updateBookDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<DeleteResult> {
+  async remove(@Param('id') id: number): Promise<DeleteResult> {
     return this.bookService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/buycard')
-  async buyLibraryCard(@Param('id') id: string): Promise<UserEntity> {
+  async buyLibraryCard(@Param('id') id: number): Promise<UserEntity> {
     return this.bookService.buyLibraryCard(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':idUser/getBook/:idBook')
   async purchaseBook(
-    @Param('idUser') id: string,
-    @Param('idBook') book: string,
+    @Param('idUser') id: number,
+    @Param('idBook') book: number,
   ): Promise<UserEntity> {
     return this.bookService.purchaseBook(id, book);
   }
@@ -68,8 +68,8 @@ export class BooksController {
   @UseGuards(JwtAuthGuard)
   @Put(':idUser/passBook/:idBook')
   async passBook(
-    @Param('idUser') id: string,
-    @Param('idBook') book: string,
+    @Param('idUser') id: number,
+    @Param('idBook') book: number,
   ): Promise<UserEntity> {
     return this.bookService.passBook(id, book);
   }

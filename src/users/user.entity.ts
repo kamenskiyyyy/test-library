@@ -1,6 +1,5 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcryptjs';
-import { BookEntity } from '../books/book.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -21,6 +20,6 @@ export class UserEntity {
     this.password = await hash(this.password, 10);
   }
 
-  @Column('text', { array: true, default: [] })
-  purchasedBooks: BookEntity[];
+  @Column('int', { array: true, default: [] })
+  purchasedBooks: number[];
 }

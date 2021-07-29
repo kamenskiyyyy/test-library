@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '../users/user.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'books' })
 export class BookEntity {
@@ -23,7 +22,4 @@ export class BookEntity {
 
   @Column({ default: false })
   isReader: boolean;
-
-  @OneToMany(() => UserEntity, (user) => user.purchasedBooks)
-  reader: UserEntity;
 }
