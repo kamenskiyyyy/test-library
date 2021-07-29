@@ -1,10 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcryptjs';
 import { BookEntity } from '../books/book.entity';
 
@@ -27,6 +21,6 @@ export class UserEntity {
     this.password = await hash(this.password, 10);
   }
 
-  @OneToMany(() => BookEntity, (book) => book.reader)
+  @Column('text', { array: true, default: [] })
   purchasedBooks: BookEntity[];
 }

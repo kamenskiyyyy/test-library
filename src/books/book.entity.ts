@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
 @Entity({ name: 'books' })
@@ -21,6 +21,9 @@ export class BookEntity {
   @Column({ default: null })
   year: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.purchasedBooks, { eager: true })
-  reader: string;
+  @Column({ default: false })
+  isReader: boolean;
+
+  @OneToMany(() => UserEntity, (user) => user.purchasedBooks)
+  reader: UserEntity;
 }

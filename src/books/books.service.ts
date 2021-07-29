@@ -56,6 +56,7 @@ export class BooksService {
   }
 
   async purchaseBook(idUser, idBook) {
+    debugger;
     const user = await this.userRepository.findOne(idUser);
     const book = await this.bookRepository.findOne(idBook);
     if (!user.libraryCard) {
@@ -66,12 +67,17 @@ export class BooksService {
         'Вы не можете взять больше пяти книг одновременно!',
       );
     }
-    if (user.purchasedBooks.find((book) => book.id === idBook)) {
-      throw new BadRequestException('Вы уже взяли эту книгу!');
+    // Метод не работает из-за получения массива в виде строки
+    // if (user.purchasedBooks.find((book) => book.id === idBook)) {
+    //   throw new BadRequestException('Вы уже взяли эту книгу!');
+    // }
+    if (book.isReader) {
+      throw new BadRequestException('Эту книгу кто-то уже взял!');
     }
-    const purchasedBooks: BookEntity[] = user.purchasedBooks;
-    const newBook = [...purchasedBooks, book];
-    Object.assign(user, (user.purchasedBooks = newBook));
+
+    user.purchasedBooks.push(book);
+    Object.assign(book, (book.isReader = true));
+    await this.bookRepository.save(book);
     return this.userRepository.save(user);
   }
 
