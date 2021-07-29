@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersDto } from './dto/users.dto';
+import { CreateUsersDto } from './dto/createUsers.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { compare } from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
+import { UpdateUsersDto } from './dto/updateUsers.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,7 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async createUser(dto: UsersDto) {
+  async createUser(dto: CreateUsersDto) {
     const userByEmail = await this.userRepository.findOne({
       email: dto.email,
     });
@@ -35,7 +36,7 @@ export class UserService {
     return this.userRepository.findOne(email);
   }
 
-  async login(dto: UsersDto) {
+  async login(dto: CreateUsersDto) {
     const user = await this.userRepository.findOne(
       { email: dto.email },
       { select: ['id', 'email', 'password'] },
@@ -65,7 +66,16 @@ export class UserService {
     return this.userRepository.findOne(id);
   }
 
-  async updateUser(id, dto: UsersDto) {
+  async updateUser(id, dto: UpdateUsersDto) {
+    const userByEmail = await this.userRepository.findOne({
+      email: dto.email,
+    });
+    if (userByEmail) {
+      throw new HttpException(
+        'Пользователь с таким email уже есть',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const user = await this.userRepository.findOne(id);
     Object.assign(user, dto);
     return await this.userRepository.save(user);

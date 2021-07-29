@@ -10,11 +10,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { UsersDto } from './dto/users.dto';
+import { CreateUsersDto } from './dto/createUsers.dto';
 import { UserService } from './users.service';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { UserEntity } from './user.entity';
 import { DeleteResult } from 'typeorm';
+import { UpdateUsersDto } from './dto/updateUsers.dto';
 
 @Controller('/users')
 export class UsersController {
@@ -22,13 +23,13 @@ export class UsersController {
 
   @UsePipes(new ValidationPipe())
   @Post('signup')
-  async register(@Body() createUserDto: UsersDto): Promise<UserEntity> {
+  async register(@Body() createUserDto: CreateUsersDto): Promise<UserEntity> {
     return await this.usersService.createUser(createUserDto);
   }
 
   @UsePipes(new ValidationPipe())
   @Post('signin')
-  async login(@Body() loginDto: UsersDto) {
+  async login(@Body() loginDto: CreateUsersDto) {
     return await this.usersService.login(loginDto);
   }
 
@@ -46,7 +47,7 @@ export class UsersController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() dto: UsersDto,
+    @Body() dto: UpdateUsersDto,
   ): Promise<UserEntity> {
     return this.usersService.updateUser(id, dto);
   }
