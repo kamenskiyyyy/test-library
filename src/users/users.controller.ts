@@ -38,14 +38,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<UserEntity> {
+  async getUserById(@Param('id') id: number): Promise<UserEntity> {
     return this.usersService.getUserById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() dto: UsersDto,
   ): Promise<UserEntity> {
     return this.usersService.updateUser(id, dto);
@@ -53,7 +53,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<DeleteResult> {
+  async remove(@Param('id') id: number): Promise<DeleteResult> {
     return this.usersService.removeUser(id);
   }
 }
